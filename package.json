@@ -1,0 +1,14 @@
+{
+  "name": "mermaid-to-png-nobrowser",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node .github/scripts/mermaid-to-png.mjs"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.0",
+    "fast-glob": "^3.3.2",
+    "jsdom": "^24.1.0",
+    "mermaid": "^11.0.0"
+  }
+}
