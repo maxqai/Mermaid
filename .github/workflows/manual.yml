@@ -1,70 +1,33 @@
 name: Mermaid → PNG (No Browser)
-
 on:
   push:
     paths:
-      - "diagrams/**.mmd"
-      - ".github/scripts/**"
-      - "package.json"
-      - "package-lock.json"
-  pull_request:
-    paths:
-      - "diagrams/**.mmd"
-      - ".github/scripts/**"
-      - "package.json"
-      - "package-lock.json"
+      - '**/*.mmd'
   workflow_dispatch:
-    inputs:
-      input_pattern:
-        description: "Glob pattern for Mermaid files"
-        default: "diagrams/**/*.mmd"
-        required: true
-      output_dir:
-        description: "Output directory for PNGs"
-        default: "diagrams"
-        required: true
-      theme:
-        description: "Mermaid theme (default, neutral, forest, dark, base)"
-        default: "default"
-        required: false
 
 jobs:
-  render:
-    name: Render Mermaid to PNG (No Browser)
+  convert:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    concurrency:
-      group: mermaid-png-${{ github.ref }}
-      cancel-in-progress: true
-
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
 
-      - name: Install dependencies
+      - name: Install mermaid-cli
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Convert Mermaid files to PNG
         run: |
-          npm ci || npm install
+          for file in $(find . -name "*.mmd"); do
+            mmdc -i "$file" -o "${file%.mmd}.png"
+          done
 
-      - name: Render to PNG (no browser)
-        env:
-          INPUT_PATTERN: ${{ github.event.inputs.input_pattern || 'diagrams/**/*.mmd' }}
-          OUTPUT_DIR:    ${{ github.event.inputs.output_dir    || 'diagrams' }}
-          MERMAID_THEME: ${{ github.event.inputs.theme         || 'default' }}
-        run: |
-          node .github/scripts/mermaid-to-png.mjs
-
-      - name: Upload PNGs
+      - name: Upload PNGs as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: mermaid-pngs
-          path: |
-            diagrams/**/*.png
-            !**/node_modules/**
-          if-no-files-found: warn
+          path: '**/*.png'
