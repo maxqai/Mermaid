@@ -1,13 +1,13 @@
 flowchart LR
   A[Define Needs & Scope] --> B[Draft Model Plan]
-  B --> C[Attach Rules (IDS/SHACL)]
-  C --> D[Internal Review (Steward)]
-  D --> E[Automated QA (Quality Gate)]
-  E -->|Pass| F[Approval (Owner/Approver)]
+  B --> C["Attach Rules (IDS/SHACL)"]
+  C --> D["Internal Review (Steward)"]
+  D --> E["Automated QA (Quality Gate)"]
+  E -->|Pass| F["Approval (Owner/Approver)"]
   E -->|Fail| B
   F --> G[Publish to Catalog & CDE]
   G --> H[Monitor & Validate Deliverables]
-  H --> I[Change Request (RFC)]
+  H --> I["Change Request (RFC)"]
   I --> B
   subgraph Roles
     R1[Owner]:::r
