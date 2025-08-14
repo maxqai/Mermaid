@@ -1,0 +1,21 @@
+```mermaid
+flowchart LR
+  A[Define Needs & Scope] --> B[Draft Model Plan]
+  B --> C[Attach Rules (IDS/SHACL)]
+  C --> D[Internal Review (Steward)]
+  D --> E[Automated QA (Quality Gate)]
+  E -->|Pass| F[Approval (Owner/Approver)]
+  E -->|Fail| B
+  F --> G[Publish to Catalog & CDE]
+  G --> H[Monitor & Validate Deliverables]
+  H --> I[Change Request (RFC)]
+  I --> B
+  subgraph Roles
+    R1[Owner]:::r
+    R2[Steward]:::r
+    R3[Modeler]:::r
+    R4[QA/Reviewer]:::r
+    R5[DevOps]:::r
+  end
+  classDef r fill:#eee,stroke:#666,stroke-width:1px;
+```
