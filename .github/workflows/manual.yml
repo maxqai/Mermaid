@@ -23,7 +23,7 @@ jobs:
       - name: Convert Mermaid files to PNG
         run: |
           for file in $(find . -name "*.mmd"); do
-            mmdc -i "$file" -o "${file%.mmd}.png"
+            mmdc -i "$file" -o "${file%.mmd}.png" --no-sandbox
           done
 
       - name: Upload PNGs as artifacts
