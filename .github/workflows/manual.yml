@@ -28,7 +28,7 @@ jobs:
           mkdir -p diagrams/svg
           for file in $(find . -name "*.mmd"); do
             echo "Converting $file..."
-            mmdc -i "$file" -o "diagrams/svg/$(basename ${file%.mmd}.svg)"
+            mmdc -p puppeteerConfig.json -i "$file" -o "diagrams/svg/$(basename ${file%.mmd}.svg)"
           done
 
       - name: Upload SVGs as artifacts
