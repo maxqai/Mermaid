@@ -1,4 +1,4 @@
-name: Mermaid → PNG (No Browser)
+name: Mermaid → SVG (No Browser)
 on:
   push:
     paths:
@@ -20,14 +20,23 @@ jobs:
       - name: Install mermaid-cli
         run: npm install -g @mermaid-js/mermaid-cli
 
-      - name: Convert Mermaid files to PNG
+      - name: Convert Mermaid files to SVG
         run: |
+          mkdir -p diagrams/svg
           for file in $(find . -name "*.mmd"); do
-            mmdc -p puppeteerConfig.json -i "$file" -o "${file%.mmd}.png"
+            mmdc -p puppeteerConfig.json -i "$file" -o "diagrams/svg/$(basename ${file%.mmd}.svg)"
           done
 
-      - name: Upload PNGs as artifacts
+      - name: Upload SVGs as artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mermaid-pngs
-          path: '**/*.png'
+          name: mermaid-svgs
+          path: 'diagrams/svg/*.svg'
+
+      - name: Push SVGs to diagrams/svg
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add diagrams/svg/*.svg
+          git commit -m "Add generated SVG diagrams [skip ci]" || echo "No changes to commit"
+          git push
