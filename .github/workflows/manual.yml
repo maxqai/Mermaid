@@ -1,32 +1,70 @@
-# This is a basic workflow that is manually triggered
+name: Mermaid → PNG (No Browser)
 
-name: Manual workflow
-
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
+  push:
+    paths:
+      - "diagrams/**.mmd"
+      - ".github/scripts/**"
+      - "package.json"
+      - "package-lock.json"
+  pull_request:
+    paths:
+      - "diagrams/**.mmd"
+      - ".github/scripts/**"
+      - "package.json"
+      - "package-lock.json"
   workflow_dispatch:
-    # Inputs the workflow accepts.
     inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
+      input_pattern:
+        description: "Glob pattern for Mermaid files"
+        default: "diagrams/**/*.mmd"
         required: true
-        # The data type of the input
-        type: string
+      output_dir:
+        description: "Output directory for PNGs"
+        default: "diagrams"
+        required: true
+      theme:
+        description: "Mermaid theme (default, neutral, forest, dark, base)"
+        default: "default"
+        required: false
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
+  render:
+    name: Render Mermaid to PNG (No Browser)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: mermaid-png-${{ github.ref }}
+      cancel-in-progress: true
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ inputs.name }}"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+
+      - name: Render to PNG (no browser)
+        env:
+          INPUT_PATTERN: ${{ github.event.inputs.input_pattern || 'diagrams/**/*.mmd' }}
+          OUTPUT_DIR:    ${{ github.event.inputs.output_dir    || 'diagrams' }}
+          MERMAID_THEME: ${{ github.event.inputs.theme         || 'default' }}
+        run: |
+          node .github/scripts/mermaid-to-png.mjs
+
+      - name: Upload PNGs
+        uses: actions/upload-artifact@v4
+        with:
+          name: mermaid-pngs
+          path: |
+            diagrams/**/*.png
+            !**/node_modules/**
+          if-no-files-found: warn
