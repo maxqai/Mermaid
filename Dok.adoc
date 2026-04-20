@@ -8,3 +8,6 @@ Tunnel Belchen::
   Typ::: IfcTunnel
   Länge::: 3200 m
   Status::: geplant
+
+* *Brücke Aarberg* — Typ: IfcBridge, Länge: 120 m, Status: in Betrieb
+* *Tunnel Belchen* — Typ: IfcTunnel, Länge: 3200 m, Status: geplant
