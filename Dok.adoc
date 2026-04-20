@@ -11,3 +11,10 @@ Tunnel Belchen::
 
 * *Brücke Aarberg* — Typ: IfcBridge, Länge: 120 m, Status: in Betrieb
 * *Tunnel Belchen* — Typ: IfcTunnel, Länge: 3200 m, Status: geplant
+
+[format=csv, options="header"]
+|===
+name,typ,länge_m,status
+Brücke Aarberg,IfcBridge,120,in Betrieb
+Tunnel Belchen,IfcTunnel,3200,geplant
+|===
